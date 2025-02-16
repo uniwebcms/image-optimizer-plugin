@@ -1,0 +1,51 @@
+{
+  "name": "@uniwebcms/image-optimizer-plugin",
+  "version": "1.0.0",
+  "description": "Image optimization plugin for @uniwebcms/site-content-collector",
+  "type": "module",
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
+  },
+  "keywords": [
+    "uniwebcms",
+    "image",
+    "optimization",
+    "sharp",
+    "webp",
+    "avif"
+  ],
+  "author": "Proximify Inc.",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "sharp": "^0.33.2",
+    "file-type": "^19.0.0",
+    "p-queue": "^8.0.1",
+    "keyv": "^4.5.4",
+    "debug": "^4.3.4"
+  },
+  "peerDependencies": {
+    "@uniwebcms/site-content-collector": "^2.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@jest/globals": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uniwebcms/image-optimizer-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/uniwebcms/image-optimizer-plugin/issues"
+  }
+}
