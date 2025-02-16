@@ -5,8 +5,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { ImageOptimizerPlugin } from "../src/plugin.js";
 
-// Mock external modules
-jest.mock("sharp", () => {
+jest.unstable_mockModule("sharp", () => {
   return jest.fn(() => ({
     metadata: jest.fn().mockResolvedValue({
       width: 1920,
@@ -21,12 +20,19 @@ jest.mock("sharp", () => {
   }));
 });
 
+// Import sharp **after** the mock
+const sharp = await import("sharp");
+
 describe("ImageOptimizerPlugin", () => {
   let plugin;
   let testDir;
   let context;
 
   beforeEach(async () => {
+    // console.log("sharp", sharp);
+    // Clear sharp mock before each test
+    sharp.mockClear();
+
     // Create temp test directory
     testDir = join(tmpdir(), "image-optimizer-test-" + Date.now());
     await mkdir(testDir);
@@ -123,8 +129,7 @@ describe("ImageOptimizerPlugin", () => {
     // Process image first time
     await plugin.processContent(content, context);
 
-    // Mock sharp to verify it's not called again
-    const sharp = require("sharp");
+    // Clear mock to verify it's not called again
     sharp.mockClear();
 
     // Process same image again
