@@ -6,7 +6,7 @@ import PQueue from "p-queue";
 import debug from "debug";
 import { ImageProcessor } from "./processor.js";
 import { Cache } from "./cache.js";
-import { isImageNode, resolvePublicPath } from "./utils.js";
+import { isImageNode, resolvePublicPath, validateOptions } from "./utils.js";
 
 const log = debug("uniweb:image-optimizer");
 
@@ -41,6 +41,8 @@ export class ImageOptimizerPlugin extends ProcessorPlugin {
 
       ...options,
     };
+
+    validateOptions(this.options);
 
     this.#processor = new ImageProcessor(this.options);
     this.#cache = new Cache(this.options.cacheTimeout);

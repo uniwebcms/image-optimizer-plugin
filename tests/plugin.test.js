@@ -65,7 +65,7 @@ describe("ImageOptimizerPlugin", () => {
     };
   });
 
-  test.only("processes image nodes correctly", async () => {
+  test("processes image nodes correctly", async () => {
     const content = {
       type: "doc",
       content: [
@@ -150,7 +150,7 @@ describe("ImageOptimizerPlugin", () => {
       type: "doc",
       content: Array(5).fill({
         type: "image",
-        attrs: { src: "/test.jpg" },
+        attrs: { src: "/img/test.png" },
       }),
     };
 
@@ -166,7 +166,7 @@ describe("ImageOptimizerPlugin", () => {
 
   test("respects plugin options", async () => {
     plugin = new ImageOptimizerPlugin({
-      outputDir: join(testDir, "cache"),
+      outputDir: "./cache",
       publicPath: "/custom",
       formats: ["webp", "avif"],
       quality: 90,
@@ -178,12 +178,12 @@ describe("ImageOptimizerPlugin", () => {
       content: [
         {
           type: "image",
-          attrs: { src: "/test.jpg" },
+          attrs: { src: "/img/test.png" },
         },
       ],
     };
 
-    await plugin.processContent(content, context);
+    const result = await plugin.processContent(content, context);
 
     // Verify custom options were used
     const imageNode = content.content[0];
