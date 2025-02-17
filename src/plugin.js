@@ -102,10 +102,12 @@ export class ImageOptimizerPlugin extends ProcessorPlugin {
       const cacheKey = `image:${imagePath}`;
 
       // Check cache
-      if (this.#cache.has(cacheKey)) {
+      const hasCached = await this.#cache.has(cacheKey);
+      if (hasCached) {
+        const cachedData = await this.#cache.get(cacheKey);
         node.attrs = {
           ...node.attrs,
-          ...this.#cache.get(cacheKey),
+          ...cachedData,
         };
         return;
       }
@@ -129,8 +131,8 @@ export class ImageOptimizerPlugin extends ProcessorPlugin {
           originalSrc: src,
         };
 
-        // Cache results
-        this.#cache.set(cacheKey, attrs);
+        // Cache results - await the set operation
+        await this.#cache.set(cacheKey, attrs);
         this.#processed.add(src);
 
         return attrs;
@@ -138,6 +140,7 @@ export class ImageOptimizerPlugin extends ProcessorPlugin {
 
       node.attrs = result;
     } catch (err) {
+      log("Error found:", err.message);
       this.addError(context, `Failed to process image ${src}: ${err.message}`);
     }
   }

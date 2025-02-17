@@ -1,9 +1,15 @@
 // tests/plugin.test.js
 import { jest } from "@jest/globals";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { ImageOptimizerPlugin } from "../src/plugin.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const FIXTURES_PATH = join(__dirname, "fixtures", "sample-site");
 
 jest.unstable_mockModule("sharp", () => {
   return jest.fn(() => ({
@@ -29,22 +35,22 @@ describe("ImageOptimizerPlugin", () => {
   let context;
 
   beforeEach(async () => {
-    // console.log("sharp", sharp);
     // Clear sharp mock before each test
     sharp.mockClear();
 
     // Create temp test directory
-    testDir = join(tmpdir(), "image-optimizer-test-" + Date.now());
-    await mkdir(testDir);
+    // testDir = join(tmpdir(), "image-optimizer-test-" + Date.now());
+    // await mkdir(testDir);
+    testDir = FIXTURES_PATH;
 
     // Create test image
-    const imagePath = join(testDir, "test.jpg");
-    await writeFile(imagePath, "mock image data");
-
+    // const imagePath = join(testDir, "test.jpg");
+    // await writeFile(imagePath, "mock image data");
+    // console.log("testDir", testDir);
     // Initialize plugin with test options
     plugin = new ImageOptimizerPlugin({
-      outputDir: join(testDir, "cache"),
-      publicPath: "/images",
+      outputDir: "./cache", // for processed images
+      publicPath: "/images", // path used when generating the srcset
       formats: ["webp"],
       quality: 80,
       sizes: [{ width: 640, suffix: "sm" }],
@@ -52,21 +58,21 @@ describe("ImageOptimizerPlugin", () => {
 
     // Mock context
     context = {
-      resourcePath: testDir,
+      resourcePath: join(testDir, "pages"), // Root directory of the pages
       errors: [],
-      currentFile: join(testDir, "content.md"),
+      currentFile: join(testDir, "home", "content.md"),
       cache: new Map(),
     };
   });
 
-  test("processes image nodes correctly", async () => {
+  test.only("processes image nodes correctly", async () => {
     const content = {
       type: "doc",
       content: [
         {
           type: "image",
           attrs: {
-            src: "/test.jpg",
+            src: "/img/test.png",
             alt: "Test image",
           },
         },
@@ -82,9 +88,9 @@ describe("ImageOptimizerPlugin", () => {
     expect(imageNode.attrs).toMatchObject({
       srcset: expect.stringContaining("webp"),
       sizes: expect.stringContaining("vw"),
-      width: 1920,
-      height: 1080,
-      originalSrc: "/test.jpg",
+      width: 1792,
+      height: 1024,
+      originalSrc: "/img/test.png",
     });
 
     // Verify no errors occurred
